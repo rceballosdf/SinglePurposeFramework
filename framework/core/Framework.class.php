@@ -17,9 +17,12 @@ class Framework {
         define("CONFIG_PATH", APP_PATH . "config" . DS);
         define("CONTROLLER_PATH", APP_PATH . "controllers" . DS);
         define("MODEL_PATH", APP_PATH . "models" . DS);
+        define("VENDOR_PATH", ROOT . "vendor" . DS);
+        define('DATABASE_PATH',FRAMEWORK_PATH . 'database' . DS );
 
         define("BL_PATH", APP_PATH . "BL" . DS);
         define("DAL_PATH", APP_PATH . "DAL" . DS);
+        define("LOGS_PATH", APP_PATH . "Logs" . DS);
 
         define("VIEW_PATH", APP_PATH . "views" . DS);
         define("CORE_PATH", FRAMEWORK_PATH . "core" . DS);
@@ -40,11 +43,12 @@ class Framework {
         define("ACTION", isset($_REQUEST['a']) ? $_REQUEST['a'] : 'index');
         define("CURR_CONTROLLER_PATH", CONTROLLER_PATH . PLATFORM . DS);
         define("CURR_VIEW_PATH", VIEW_PATH . PLATFORM . DS);
-        // Load core classes
+        // Load core classes and vendor installed utilities
+        require VENDOR_PATH . "autoload.php";
         require CORE_PATH . "Controller.class.php";
         require CORE_PATH . "Loader.class.php";
-        require DB_PATH . "Mysql.class.php";
         require CORE_PATH . "Model.class.php";
+        require DATABASE_PATH . 'db.php';
         // Load configuration file
         $GLOBALS['config'] = include CONFIG_PATH . "config.php";
         // Start session
@@ -112,6 +116,7 @@ class Framework {
         $controller = new $controllerClass;
         $controller->parameters = $parameters;
         $controller->controllerName = $routeRequested[0];
+        $controller->executedActionName = str_replace("Action","",$action_name);
         $controller->start_datetime=$start_datetime;
         if(method_exists($controller,$action_name)){
             $controller->$action_name();

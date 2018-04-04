@@ -12,13 +12,16 @@ class Controller{
     public $start_datetime;
     private $contentFunction;
     public $scriptsSections;
-    
+    public $executedActionName;
+    public $executedControllerName;
+    public $logger;
     public function __construct()
     {
         $this->scriptsSections=array();
         $this->loader = new Loader();
         $this->usuariosBL = $this->loader->bl("UsuariosBL");
         $this->usuario = $this->getCurrrentUser();
+        $this->logger = Logger::getLogger("main");
     }
     public function redirect($url,$message,$wait = 0)
     {
@@ -114,6 +117,17 @@ class Controller{
     {
         echo "<label for='".$controlName."' ".$htmlAttr.">".$text."</label>";
     }
+    protected function selectList($items, $valueProperty,$textProperty,$name, $selectedValue=0,$htmlAttr=''){
+        echo "<select id='".$name."' ".$htmlAttr." name='".$name."'>";
+        foreach($items as $item){
+            $selected ="";
+            if($item->$valueProperty === $selectedValue){
+                $selected = "selected";
+            }
+            echo "<option value='".$item->$valueProperty."' ".$selected.">".$item->$textProperty."</option>";
+        }
+        echo "</select>";
+    }
     protected function hidden($controlName, $value)
     {
         echo "<input type='hidden' id='".$controlName."' name='".$controlName."' value='".$value."'>";
@@ -133,5 +147,40 @@ class Controller{
     protected function endForm()
     {
         echo "</form>";
+    }
+    public function InstallAction()
+    {
+        
+    }
+    protected function setModel($viewModel, $queryResult){
+        $properties = get_object_vars($viewModel);
+        foreach($properties as $key => $val){
+            if(array_key_exists($key,$queryResult)){
+            $viewModel->$key = $queryResult[$key];
+            }            
+        }
+        return $viewModel;
+    }
+    protected function setListModel($viewModel,$queryResult){
+        $result = array();
+        $properties = get_object_vars($viewModel);
+        $classtype = get_class($viewModel);
+        foreach($queryResult as $row){
+            $item = new $classtype;
+
+            foreach($properties as $key => $val){
+                if(array_key_exists($key,$row)){
+                $item->$key = $row[$key];
+                }
+            }    
+            array_push($result,$item);        
+        }
+        return $result;
+    }
+    protected function isExecutedAction($actionName, $controllerName, $htmlAttr){
+        if($this->executedActionName === $actionName & $controllerName === $this->controllerName){
+            echo $htmlAttr;
+        }
+        echo "";
     }
 }?>
