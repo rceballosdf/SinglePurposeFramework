@@ -37,12 +37,17 @@ class UsuariosBL extends baseBL{
         return (isset($_SESSION['usuarioId']) && $_SESSION['usuarioId']>0 );
     }
     public function GetCurrentUser(){
+        $usuarioId;
         if($this->IsAuthenticated()){
             $usuarioId = $_SESSION['usuarioId'];
         }
         else{
             return null;
         }
+        return $this->GetUserById($usuarioId);
+    }
+    protected function GetUserById($Id){
+        return $this->DAL->GetUserById($Id);
     }
     public function logOut(){
         $_SESSION['usuarioId'] = null;

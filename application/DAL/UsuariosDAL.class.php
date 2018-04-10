@@ -1,7 +1,5 @@
 <?php
 
-include 'db.php';
-
 class UsuariosDAL {
 
     /// Queries
@@ -10,7 +8,7 @@ class UsuariosDAL {
     private $query_selectByEmailAndId = 'SELECT 1 FROM Usuario where correo =:email AND Id =:Id';
     private $query_selectIsRoot = 'SELECT * FROM Usuario Where correo =:email and password=:pass and IsRoot =1';
     private $query_selectALL = 'SELECT * FROM Usuario';
-
+    private $query_usuarioById = "SELECT * FROM Usuario where Id=:Id";
     //DataAccess Object
     private $DB;
 
@@ -37,6 +35,10 @@ class UsuariosDAL {
         $parameters = array('email'=>$email, 'Id'=>$Id);
         
         return $this->DB->query($this->query_selectByEmailAndId,$parameters);
+    }
+    public function GetUserById($Id){
+        $parameters =array('Id'=>$Id);
+        return $this->DB->query($this->query_usuarioById,$parameters)[0];
     }
 }
 

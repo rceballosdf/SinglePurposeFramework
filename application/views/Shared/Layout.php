@@ -1,9 +1,15 @@
+<?php
+$start_datetime = $this->start_datetime;
+$end_datetime = DateTime::createFromFormat('U.u', microtime(true));
+$interval = $start_datetime->diff($end_datetime);
+$executionTime = ' ' . $interval->y .'/' . $interval->m . '/' . $interval->d . ' ' . $interval->h . ':' . $interval->i . ':' . $interval->s . 'm' . $interval->f;
+?>
 <!DOCTYPE html>
 <html>
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title> | Dashboard</title>
+		<title>INSPINIA | Dashboard</title>
 		<link href="<?php echo CSS_URL; ?>bootstrap.min.css" rel="stylesheet">
 		<link href="<?php echo PUBLIC_URL; ?>font-awesome/css/font-awesome.css" rel="stylesheet">
 		<!-- Toastr style -->
@@ -35,7 +41,7 @@
 						</div>
 						<ul class="nav navbar-top-links navbar-right">
 							<li>
-								<span class="m-r-sm text-muted welcome-message">Welcome to SinglePurposeFramework Admin Theme.</span>
+								<span class="m-r-sm text-muted welcome-message">Welcome to INSPINIA+ Admin Theme.</span>
 							</li>
 							<li class="dropdown">
 								<a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
@@ -143,14 +149,17 @@
 				<?php 
 					$this->showContent(); 
 					?>     
-			</div><div class="footer">
+			</div>
+			<?php if($this->showFooter){ ?>
+				<div class="footer">
 					<div class="pull-right">
-						10GB of <strong>250GB</strong> Free.
+						<p class="m-t"> <small>tiempo de ejecución: <?php echo $executionTime; ?></small> </p>
 					</div>
 					<div>
 						<strong>Copyright</strong> Example Company &copy; 2014-2015
 					</div>
 				</div>
+			<?php } ?>
 		</div>
         
 		<!-- Mainly scripts -->
@@ -168,7 +177,7 @@
 		<script src="<?php echo JS_URL; ?>plugins/peity/jquery.peity.min.js"></script>
 		<script src="<?php echo JS_URL; ?>demo/peity-demo.js"></script>
 		<!-- Custom and plugin javascript -->
-		<script src="<?php echo JS_URL; ?>custom.js"></script>
+		<script src="<?php echo JS_URL; ?>inspinia.js"></script>
 		<script src="<?php echo JS_URL; ?>plugins/pace/pace.min.js"></script>
 		<!-- jQuery UI -->
 		<script src="<?php echo JS_URL; ?>plugins/jquery-ui/jquery-ui.min.js"></script>
@@ -199,7 +208,7 @@
 			            showMethod: 'slideDown',
 			            timeOut: 4000
 			        };
-			        toastr.success('Responsive Admin Theme', 'Welcome to SinglePurposeFramework');
+			        toastr.success('Responsive Admin Theme', 'Welcome to INSPINIA');
 			
 			    }, 1300);
 			

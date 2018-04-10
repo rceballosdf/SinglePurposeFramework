@@ -2,7 +2,7 @@
 class Loader{
     // Load library classes
     public function library($lib){
-        include LIB_PATH . "$lib.class.php";
+        include_once LIB_PATH . "$lib.class.php";
     }
     // loader helper functions. Naming conversion is xxx_helper.php;
     public function helper($helper){
@@ -13,7 +13,7 @@ class Loader{
         return new $classname();
     }
     public function dal($classname){
-        include DAL_PATH . "$classname.class.php";
+        include_once DAL_PATH . "$classname.class.php";
         return new $classname();
     }
 }

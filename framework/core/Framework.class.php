@@ -5,18 +5,27 @@ class Framework {
         self::autoload();
         self::dispatch($start_datetime);
     }
-    private static function init() {
+    private static function init() { 
         // Define path constants
         define("DS", DIRECTORY_SEPARATOR);
         define("ROOT", getcwd() . DS);
-        define("BASE_URL","http://localhost:8080/CADS/");
+        define("WS","/");
         define("US", "/");
         define("APP_PATH", ROOT . 'application' . DS);
         define("FRAMEWORK_PATH", ROOT . "framework" . DS);
         define("PUBLIC_PATH", ROOT . "public" . DS);
         define("CONFIG_PATH", APP_PATH . "config" . DS);
+        //Load configuration file 
+        $GLOBALS['config'] = include CONFIG_PATH . "config.php";
+        if($GLOBALS['config']['environment']=="DEV"){
+            define("BASE_URL","http://localhost:8080/cads/");
+        }
+        elseif($GLOBALS['config']['environment']=="PROD"){
+            define("BASE_URL","https://automovilesenmonterrey.com/");
+        }
         define("CONTROLLER_PATH", APP_PATH . "controllers" . DS);
         define("MODEL_PATH", APP_PATH . "models" . DS);
+        define("ENTITY_PATH", MODEL_PATH . "entities" . DS);
         define("VENDOR_PATH", ROOT . "vendor" . DS);
         define('DATABASE_PATH',FRAMEWORK_PATH . 'database' . DS );
 
@@ -31,10 +40,10 @@ class Framework {
         define("HELPER_PATH", FRAMEWORK_PATH . "helpers" . DS);
         define("UPLOAD_PATH", PUBLIC_PATH . "uploads" . DS);
 
-        define("PUBLIC_URL", BASE_URL . "public" . DS);
-        define("JS_URL", PUBLIC_URL  . "js" . DS);
-        define("CSS_URL", PUBLIC_URL . "css" . DS);
-        define("IMG_URL", PUBLIC_URL . "img" . DS);
+        define("PUBLIC_URL", BASE_URL . "public" . WS);
+        define("JS_URL", PUBLIC_URL  . "js" . WS);
+        define("CSS_URL", PUBLIC_URL . "css" . WS);
+        define("IMG_URL", PUBLIC_URL . "img" . WS);
 
         // Define platform, controller, action, for example:
         // index.php?p=admin&c=Goods&a=add
@@ -49,8 +58,6 @@ class Framework {
         require CORE_PATH . "Loader.class.php";
         require CORE_PATH . "Model.class.php";
         require DATABASE_PATH . 'db.php';
-        // Load configuration file
-        $GLOBALS['config'] = include CONFIG_PATH . "config.php";
         // Start session
         session_start();
     }
@@ -67,7 +74,7 @@ class Framework {
                 require_once $controllerToLoad;
             }
             else{
-                echo 'No existe el controlador';
+                echo "[".$classname."]".$controllerToLoad . ' - No existe el controlador';
                 exit;
             }
         } elseif (substr($classname, -5) == "Model"){
@@ -77,9 +84,14 @@ class Framework {
         elseif(substr($classname,-2)=="BL"){
             require_once BL_PATH . "$classname.class.php";
         }
-        
+        elseif(substr($classname,-7)=="BaseDAL"){
+            require_once DAL_PATH . "base" . DS . "$classname.class.php";
+        }
         elseif(substr($classname,-3)=="DAL"){
             require_once DAL_PATH . "$classname.class.php";
+        }
+        elseif(substr($classname,-6)=="Entity"){
+            require_once ENTITY_PATH . "$classname.class.php";
         }
     }
     private static function dispatch($start_datetime) {
@@ -87,7 +99,13 @@ class Framework {
 
         list($path) = explode('?', $_SERVER['REQUEST_URI']);
         //Remove script path:
-        $path = substr($path, strlen(dirname($_SERVER['SCRIPT_NAME']))+1);
+        //if($GLOBALS['config']['environment']=="PROD"){
+            //$path = substr($path, strlen(dirname($_SERVER['SCRIPT_NAME'])));
+        //}
+        //if($GLOBALS['config']['environment']=="DEV"){
+            $len = strlen(dirname($_SERVER['SCRIPT_NAME']))+1;
+            $path = substr($path, $len);
+        //}
         //Explode path to directories and remove empty items:
         $pathInfo = array();
         foreach (explode('/', $path) as $dir) {

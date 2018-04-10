@@ -15,6 +15,7 @@ class Controller{
     public $executedActionName;
     public $executedControllerName;
     public $logger;
+    public $showFooter;
     public function __construct()
     {
         $this->scriptsSections=array();
@@ -22,6 +23,7 @@ class Controller{
         $this->usuariosBL = $this->loader->bl("UsuariosBL");
         $this->usuario = $this->getCurrrentUser();
         $this->logger = Logger::getLogger("main");
+        $this->showFooter=true;
     }
     public function redirect($url,$message,$wait = 0)
     {
@@ -119,12 +121,16 @@ class Controller{
     }
     protected function selectList($items, $valueProperty,$textProperty,$name, $selectedValue=0,$htmlAttr=''){
         echo "<select id='".$name."' ".$htmlAttr." name='".$name."'>";
-        foreach($items as $item){
-            $selected ="";
-            if($item->$valueProperty === $selectedValue){
-                $selected = "selected";
+        if(is_array($items)){
+            foreach($items as $item){
+                if(property_exists($item,$valueProperty) && property_exists($item,$textProperty)){
+                    $selected ="";
+                    if($item->$valueProperty === $selectedValue){
+                        $selected = "selected";
+                    }
+                    echo "<option value='".$item->$valueProperty."' ".$selected.">".$item->$textProperty."</option>";
+                }
             }
-            echo "<option value='".$item->$valueProperty."' ".$selected.">".$item->$textProperty."</option>";
         }
         echo "</select>";
     }
